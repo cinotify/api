@@ -1,4 +1,4 @@
-name = "cinotify-workers"
+name = "api"
 main = "src/index.js"
 compatibility_date = "2024-03-14"
 compatibility_flags = ["nodejs_compat"]
