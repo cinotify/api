@@ -2,17 +2,18 @@ const validate = async (request) => {
 	const required = ['subject', 'to'];
 	let data;
 	try {
-		data = (await request.json()) ?? {};
+		if (request.headers.get('content-type') === 'application/json') {
+			data = (await request.json()) ?? {};
+		}
+
+		if (request.headers.get('content-type') === 'application/x-www-form-urlencoded') {
+			data = Object.fromEntries(new URLSearchParams((await request.text()) ?? ''));
+		}
 	} catch (e) {
 		data = {};
 	}
 
-	data.errors = required.reduce((acc, el) => {
-		if (!data[el]) {
-			return [...acc, `missing required parameter '${el}'`];
-		}
-		return acc;
-	}, []);
+	data.errors = required.reduce((acc, el) => (data[el] ? acc : [...acc, `missing required parameter '${el}'`]), []);
 
 	return data;
 };

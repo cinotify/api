@@ -2,7 +2,7 @@ import { env, createExecutionContext, waitOnExecutionContext, SELF } from 'cloud
 import { describe, it, expect } from 'vitest';
 import worker from '../src';
 
-const makeRequest = async (request) => {
+const send = async (request) => {
 	const ctx = createExecutionContext();
 	const response = await worker.fetch(request, env, ctx);
 	await waitOnExecutionContext(ctx);
@@ -17,30 +17,46 @@ describe('API', () => {
 				'Content-Type': 'application/json',
 			},
 		});
-		const response = await makeRequest(request);
+		const response = await send(request);
 		expect(await response.json()).toEqual({
 			errors: ["missing required parameter 'subject'", "missing required parameter 'to'"],
 		});
 		expect(response.status).toEqual(400);
 	});
-	it('does not error if the required parameters are present', async () => {
-		const request = new Request('http://example.com/api/notify', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				to: 'example@example.com',
-				subject: 'hello world',
+	it('responds to application/json and application/x-www-form-urlencoded', async () => {
+		const jsonResponse = await send(
+			new Request('http://example.com/api/notify', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					to: 'example@example.com',
+					subject: 'hello world',
+				}),
 			}),
-		});
-		const response = await makeRequest(request);
-		expect(await response.json()).toEqual(expect.not.objectContaining({ errors: [] }));
-		expect(response.status).toEqual(200);
+		);
+		expect(await jsonResponse.json()).toEqual({ to: 'example@example.com', subject: 'hello world' });
+		expect(jsonResponse.status).toEqual(200);
+
+		const formResponse = await send(
+			new Request('http://example.com/api/notify', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body: 'to=example@example.com&subject=hello world',
+			}),
+		);
+		expect(await formResponse.json()).toEqual({ to: 'example@example.com', subject: 'hello world' });
+		expect(formResponse.status).toEqual(200);
+
+		expect.assertions(4);
 	});
+
 	it('404s for undefined routes', async () => {
 		const request = new Request('http://example.com/undefined-route');
-		const response = await makeRequest(request);
+		const response = await send(request);
 		expect(response.status).toEqual(404);
 	});
 });
