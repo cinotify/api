@@ -1,6 +1,8 @@
+import { mail } from './mail';
+
 const validate = async (request) => {
   const required = ['subject', 'to'];
-  let data;
+  let data = {};
   try {
     if (request.headers.get('content-type') === 'application/json') {
       data = (await request.json()) ?? {};
@@ -13,7 +15,7 @@ const validate = async (request) => {
     data = {};
   }
 
-  data.errors = required.reduce((acc, el) => (data[el] ? acc : [...acc, `missing required parameter '${el}'`]), []);
+  data.errors = required.reduce((acc, el) => (data?.[el] ? acc : [...acc, `missing required parameter '${el}'`]), []);
 
   return data;
 };
@@ -21,12 +23,13 @@ const validate = async (request) => {
 export default {
   async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
-    if (pathname === '/api/notify') {
-      const { subject, to, errors } = await validate(request);
-      const body = {
+    if (pathname === '/api/notify' && request.method === 'POST') {
+      const { subject, to, errors = [] } = await validate(request);
+      const body = await mail({
+        env,
         subject,
         to,
-      };
+      });
       const response = {
         ...body,
         ...(errors.length && { errors }),
