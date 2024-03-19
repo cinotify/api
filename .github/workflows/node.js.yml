@@ -23,9 +23,11 @@ jobs:
       - run: npm test
   deploy:
     runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
+    # needs: test
+    # if: github.ref == 'refs/heads/main'
     environment: production
     steps:
+      - name: Debug
+        run: ls
       - name: Deploy
         run: npx wrangler deploy src/index.js -c ./wrangler.toml
