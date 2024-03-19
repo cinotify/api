@@ -27,7 +27,6 @@ jobs:
     # if: github.ref == 'refs/heads/main'
     environment: production
     steps:
-      - name: Debug
-        run: ls
+      - uses: actions/checkout@v4
       - name: Deploy
         run: npx wrangler deploy src/index.js -c ./wrangler.toml
