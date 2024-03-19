@@ -1,3 +1,5 @@
+import { mail } from './mail';
+
 const validate = async (request) => {
   const required = ['subject', 'to'];
   let data;
