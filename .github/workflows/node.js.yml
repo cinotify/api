@@ -28,4 +28,4 @@ jobs:
     environment: production
     steps:
       - name: Deploy
-        run: npx wrangler deploy src/index.js
+        run: npx wrangler deploy src/index.js -c ./wrangler.toml
