@@ -1,4 +1,4 @@
-export const mail = async ({ subject, to, env }) => {
+export const mail = async ({ subject, to, env = {} }) => {
   const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
     headers: {
       Authorization: `Bearer ${env.SENDGRID_API_KEY}`,
