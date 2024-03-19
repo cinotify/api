@@ -1,4 +1,9 @@
-import { env, createExecutionContext, waitOnExecutionContext, SELF } from 'cloudflare:test';
+import {
+  env,
+  createExecutionContext,
+  waitOnExecutionContext,
+  SELF,
+} from 'cloudflare:test';
 import { describe, it, expect } from 'vitest';
 import worker from '../src';
 
@@ -19,7 +24,10 @@ describe('API', () => {
     });
     const response = await send(request);
     expect(await response.json()).toEqual({
-      errors: ["missing required parameter 'subject'", "missing required parameter 'to'"],
+      errors: [
+        "missing required parameter 'subject'",
+        "missing required parameter 'to'",
+      ],
     });
     expect(response.status).toEqual(400);
   });
