@@ -32,6 +32,16 @@ export default {
 			};
 			return new Response(JSON.stringify(response), { status: errors.length ? 400 : 200 });
 		}
-		return new Response(null, { status: 404 });
+		return new Response(
+			JSON.stringify(
+				{
+					message: 'Not Found',
+					documentation_url: 'https://www.cinotify.cc/docs',
+				},
+				null,
+				2,
+			),
+			{ status: 404 },
+		);
 	},
 };
