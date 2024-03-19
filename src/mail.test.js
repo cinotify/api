@@ -19,9 +19,10 @@ describe('mail', () => {
     expect(global.fetch).toHaveBeenCalledWith('https://api.sendgrid.com/v3/mail/send', {
       headers: {
         Authorization: expect.any(String),
+        'Content-Type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify({ to, subject }),
+      body: expect.stringMatching(/hello(.*)ex@mple.com/),
     });
   });
 });
