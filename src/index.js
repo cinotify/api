@@ -25,7 +25,6 @@ export default {
     const { pathname } = new URL(request.url);
     if (pathname === '/api/notify' && request.method === 'POST') {
       const { subject, to, errors = [] } = await validate(request);
-      console.log('env is', env);
       const body = await mail({
         env,
         subject,
