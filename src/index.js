@@ -1,15 +1,37 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+const validate = async (request) => {
+	const required = ['subject', 'to'];
+	let data;
+	try {
+		data = (await request.json()) ?? {};
+	} catch (e) {
+		data = {};
+	}
+
+	data.errors = required.reduce((acc, el) => {
+		if (!data[el]) {
+			return [...acc, `missing required parameter '${el}'`];
+		}
+		return acc;
+	}, []);
+
+	return data;
+};
 
 export default {
 	async fetch(request, env, ctx) {
-		return new Response('Hello World!!');
+		const { pathname } = new URL(request.url);
+		if (pathname === '/api/notify') {
+			const { subject, to, errors } = await validate(request);
+			const body = {
+				subject,
+				to,
+			};
+			const response = {
+				...body,
+				...(errors.length && { errors }),
+			};
+			return new Response(JSON.stringify(response), { status: errors.length ? 400 : 200 });
+		}
+		return new Response(null, { status: 404 });
 	},
 };
