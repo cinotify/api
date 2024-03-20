@@ -29,7 +29,7 @@ const notFound = () =>
     { status: 404 },
   );
 
-export const handler = async ({ ctx, env, request }) => {
+export const handler = async ({ env, request }) => {
   const { pathname } = new URL(request.url);
   if (request.method === 'POST' && pathname === '/api/notify') {
     return await postApiNotify({ env, request });
