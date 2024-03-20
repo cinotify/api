@@ -23,8 +23,6 @@ describe.each(['application/json', 'application/x-www-form-urlencoded'])(
         body: (format[contentType] ?? ((d) => d))(body),
       });
 
-      console.log('request', request.headers.get('content-type'));
-
       expect(await params(request)).toEqual({
         errors: [],
         ...body,
