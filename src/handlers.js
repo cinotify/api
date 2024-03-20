@@ -39,8 +39,14 @@ const notFound = () =>
 
 export const handler = async ({ env, request }) => {
   const { pathname } = new URL(request.url);
+  const userAgent = request.headers.get('user-agent');
+  let response;
   if (request.method === 'POST' && pathname === '/api/notify') {
-    return await postApiNotify({ env, request });
+    response = await postApiNotify({ env, request });
   }
-  return notFound();
+  response = response || notFound();
+  console.log(
+    `${request.method} ${pathname} ${response.status} ${userAgent ?? ''}`,
+  );
+  return response;
 };
