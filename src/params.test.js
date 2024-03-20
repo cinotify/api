@@ -6,8 +6,8 @@ describe.each(['application/json', 'application/x-www-form-urlencoded'])(
   'params',
   (contentType) => {
     const body = {
-      to: 'example@example.com',
-      subject: 'hello world',
+      to: input.to,
+      subject: input.subject,
     };
 
     const format = {
