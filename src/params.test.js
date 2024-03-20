@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { params } from './params';
+import { params, parseUrlEncoded } from './params';
+import { input, inputUrlEncoded } from './test';
 
 describe.each(['application/json', 'application/x-www-form-urlencoded'])(
   'params',
@@ -41,3 +42,11 @@ describe.each(['application/json', 'application/x-www-form-urlencoded'])(
     });
   },
 );
+
+describe('parseUrlEncoded()', () => {
+  it('parses a query string into an object', async () => {
+    expect(parseUrlEncoded(inputUrlEncoded)).toStrictEqual({
+      ...input,
+    });
+  });
+});
