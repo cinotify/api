@@ -12,6 +12,9 @@ const postApiNotify = async ({ env, request }) => {
     ...(errors.length && { errors }),
   };
   return new Response(JSON.stringify(response), {
+    headers: {
+      'Content-Type': 'application/json',
+    },
     status: errors.length ? 400 : 200,
   });
 };
@@ -26,7 +29,12 @@ const notFound = () =>
       null,
       2,
     ),
-    { status: 404 },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      status: 404,
+    },
   );
 
 export const handler = async ({ env, request }) => {
