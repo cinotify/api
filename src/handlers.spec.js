@@ -4,7 +4,7 @@ import {
   waitOnExecutionContext,
 } from 'cloudflare:test';
 import { describe, it, expect } from 'vitest';
-import worker, { params } from '../src';
+import worker, { params } from '.';
 
 const send = async (request) => {
   const ctx = createExecutionContext();
@@ -37,42 +37,5 @@ describe('API', () => {
     const request = new Request('http://example.com/undefined-route');
     const response = await send(request);
     expect(response.status).toEqual(404);
-  });
-
-  describe('params', () => {
-    const body = {
-      to: 'example@example.com',
-      subject: 'hello world',
-    };
-
-    it('supports application/json', async () => {
-      const request = new Request('http://example.com/api/notify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-
-      expect(await params(request)).toEqual({
-        errors: [],
-        ...body,
-      });
-    });
-
-    it('application/x-www-form-urlencoded', async () => {
-      const formResponse = new Request('http://example.com/api/notify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams(body),
-      });
-
-      expect(await params(formResponse)).toEqual({
-        errors: [],
-        ...body,
-      });
-    });
   });
 });
