@@ -1,3 +1,18 @@
+export const parseUrlEncoded = (string) => {
+  const data = Object.fromEntries(new URLSearchParams(string));
+
+  // with array[][key]=value query params
+  for (let key in data) {
+    if (key.match(/\[/)) {
+      const [_, object, property] = key.match(/([\w]+)\[\]\[([\w]+)/);
+      data[object] = data[object] || [{}];
+      data[object][0] = { ...data[object][0], [property]: data[key] };
+      delete data[key];
+    }
+  }
+  return data;
+};
+
 /**
  * Parse a payload from a json string or a urlencoded string
  * @param {Request} request
@@ -13,12 +28,10 @@ export const params = async (request) => {
     }
 
     if (contentType === 'application/x-www-form-urlencoded') {
-      data = Object.fromEntries(
-        new URLSearchParams((await request.text()) ?? ''),
-      );
+      data = parseUrlEncoded(await request.text());
     }
   } catch (e) {
-    data = {};
+    // pass
   }
 
   data.errors = required.reduce(

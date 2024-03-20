@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { handler } from './handlers';
+import { input } from './test';
 
 describe('handlers', () => {
   beforeAll(() => {
@@ -33,7 +34,7 @@ describe('handlers', () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ to: 'example@example.com', subject: 'ok' }),
+      body: JSON.stringify(input),
     });
     await handler({ request });
     expect(global.fetch).toHaveBeenCalledWith(

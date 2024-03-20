@@ -45,6 +45,7 @@ export const handler = async ({ env, request }) => {
     response = await postApiNotify({ env, request });
   }
   response = response ?? notFound();
+  // eslint-disable-next-line no-console
   console.log(`${request.method} ${pathname} ${response.status} ${userAgent}`);
   return response;
 };

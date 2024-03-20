@@ -1,9 +1,10 @@
-const payload = ({ subject, to }) => ({
+const payload = ({ subject, to, body, attachments }) => ({
   // https://docs.sendgrid.com/api-reference/mail-send/mail-send#body
+  attachments,
   content: [
     {
       type: 'text/plain',
-      value: ' ',
+      value: body ?? ' ',
     },
   ],
   from: {

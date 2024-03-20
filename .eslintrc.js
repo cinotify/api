@@ -22,5 +22,8 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  rules: {},
+  rules: {
+    'no-console': ['error'],
+    'no-unused-vars': ['error', { destructuredArrayIgnorePattern: '^_' }],
+  },
 };

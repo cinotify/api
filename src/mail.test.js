@@ -1,21 +1,38 @@
-import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { input } from './test';
 import { mail } from './mail';
 
-const originalFetch = global.fetch;
+// https://docs.sendgrid.com/api-reference/mail-send/mail-send#body
+const fixture = {
+  attachments: input.attachments,
+  content: [
+    {
+      type: 'text/plain',
+      value: input.body,
+    },
+  ],
+  from: {
+    email: 'app@cinotify.cc',
+  },
+  personalizations: [
+    {
+      subject: input.subject,
+      to: [
+        {
+          email: input.to,
+        },
+      ],
+    },
+  ],
+};
 
 describe('mail', () => {
   beforeAll(() => {
     global.fetch = vi.fn();
   });
-  afterAll(() => {
-    global.fetch = originalFetch;
-    vi.clearAllMocks();
-  });
   it('makes a request to the sendgrid api', async () => {
     global.fetch.mockResolvedValueOnce({ json: () => '{}' });
-    const to = 'ex@mple.com';
-    const subject = 'hello';
-    await mail({ to, subject });
+    await mail(input);
     expect(global.fetch).toHaveBeenCalledWith(
       'https://api.sendgrid.com/v3/mail/send',
       {
@@ -24,7 +41,7 @@ describe('mail', () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: expect.stringMatching(/hello(.*)ex@mple.com/),
+        body: JSON.stringify(fixture),
       },
     );
   });
