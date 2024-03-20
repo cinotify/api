@@ -1,6 +1,6 @@
 import { mail } from './mail';
 
-const validate = async (request) => {
+export const params = async (request) => {
   const contentType = request.headers.get('content-type');
   const required = ['subject', 'to'];
   let data = {};
@@ -31,7 +31,7 @@ export default {
   async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
     if (pathname === '/api/notify' && request.method === 'POST') {
-      const { subject, to, errors = [] } = await validate(request);
+      const { subject, to, errors = [] } = await params(request);
       const body = await mail({
         env,
         subject,
