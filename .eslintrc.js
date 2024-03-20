@@ -23,6 +23,7 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
+    'no-console': ['error'],
     'no-unused-vars': ['error', { destructuredArrayIgnorePattern: '^_' }],
   },
 };
