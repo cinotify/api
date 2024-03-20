@@ -17,8 +17,13 @@ const payload = ({ subject, to }) => ({
   ],
 });
 
+/**
+ * send an email using the sendgrid api
+ * @param {{subject: string, to: string, env: {}}} options
+ * @returns Promise<undefined>
+ */
 export const mail = async ({ subject, to, env = {} }) => {
-  const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+  await fetch('https://api.sendgrid.com/v3/mail/send', {
     headers: {
       Authorization: `Bearer ${env.SENDGRID_API_KEY}`,
       'Content-Type': 'application/json',
@@ -26,11 +31,4 @@ export const mail = async ({ subject, to, env = {} }) => {
     method: 'POST',
     body: JSON.stringify(payload({ subject, to })),
   });
-  let data;
-  try {
-    data = await response.json();
-  } catch (e) {
-    data = {};
-  }
-  return data;
 };

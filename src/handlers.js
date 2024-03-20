@@ -2,14 +2,13 @@ import { mail } from './mail';
 import { params } from './params';
 
 const postApiNotify = async ({ env, request }) => {
-  const { subject, to, errors = [] } = await params(request);
-  const body = await mail({
+  const { errors = [], ...rest } = await params(request);
+  await mail({
     env,
-    subject,
-    to,
+    ...rest,
   });
   const response = {
-    ...body,
+    ...rest,
     ...(errors.length && { errors }),
   };
   return new Response(JSON.stringify(response), {

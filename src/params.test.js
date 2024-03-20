@@ -36,4 +36,15 @@ describe('params', () => {
       ...body,
     });
   });
+
+  it('has errors', async () => {
+    const request = {
+      headers: { get: () => {} },
+    };
+    const { errors } = await params(request);
+    expect(errors).toEqual([
+      "missing required parameter 'subject'",
+      "missing required parameter 'to'",
+    ]);
+  });
 });

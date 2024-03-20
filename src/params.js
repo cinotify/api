@@ -1,3 +1,8 @@
+/**
+ * Parse a payload from a json string or a urlencoded string
+ * @param {Request} request
+ * @returns Record<string, unknown>
+ */
 export const params = async (request) => {
   const contentType = request.headers.get('content-type');
   const required = ['subject', 'to'];

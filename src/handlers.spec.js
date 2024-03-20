@@ -1,41 +1,44 @@
-import {
-  env,
-  createExecutionContext,
-  waitOnExecutionContext,
-} from 'cloudflare:test';
-import { describe, it, expect } from 'vitest';
-import worker, { params } from '.';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
+import { handler } from './handlers';
 
-const send = async (request) => {
-  const ctx = createExecutionContext();
-  const response = await worker.fetch(request, env, ctx);
-  await waitOnExecutionContext(ctx);
-  return response;
-};
+describe('handlers', () => {
+  beforeAll(() => {
+    global.fetch = vi.fn();
+  });
 
-describe('API', () => {
-  it('errors for missing required parameters', async () => {
+  it('400', async () => {
     const request = new Request('http://example.com/api/notify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    const response = await send(request);
-    expect(await response.json()).toEqual({
-      errors: [
-        "missing required parameter 'subject'",
-        "missing required parameter 'to'",
-      ],
-    });
-    expect(response.status).toEqual(400);
+
+    const response = await handler({ request });
+    expect(await response.status).toEqual(400);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({ errors: expect.any(Array) }),
+    );
   });
 
-  // TODO: mock worker outbound fetch
-
-  it('404s for undefined routes', async () => {
+  it('404', async () => {
     const request = new Request('http://example.com/undefined-route');
-    const response = await send(request);
+    const response = await handler({ request });
     expect(response.status).toEqual(404);
+  });
+
+  it('postNotify', async () => {
+    const request = new Request('http://example.com/api/notify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ to: 'example@example.com', subject: 'ok' }),
+    });
+    await handler({ request });
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://api.sendgrid.com/v3/mail/send',
+      expect.anything(),
+    );
   });
 });
