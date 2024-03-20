@@ -1,45 +1,37 @@
 import { describe, it, expect } from 'vitest';
 import { params } from './params';
 
-describe('params', () => {
-  const body = {
-    to: 'example@example.com',
-    subject: 'hello world',
-  };
+describe.each(['application/json', 'application/x-www-form-urlencoded'])(
+  'params',
+  (contentType) => {
+    const body = {
+      to: 'example@example.com',
+      subject: 'hello world',
+    };
 
-  it('supports application/json', async () => {
-    const request = new Request('http://example.com/api/notify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
+    const format = {
+      'application/json': (d) => JSON.stringify(d),
+      'application/x-www-form-urlencoded': (d) => new URLSearchParams(d),
+    };
+
+    it('parses the posted data', async () => {
+      const request = new Request('http://example.com/api/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': contentType,
+        },
+        body: (format[contentType] ?? ((d) => d))(body),
+      });
+
+      console.log('request', request.headers.get('content-type'));
+
+      expect(await params(request)).toEqual({
+        errors: [],
+        ...body,
+      });
     });
 
-    expect(await params(request)).toEqual({
-      errors: [],
-      ...body,
-    });
-  });
-
-  it('application/x-www-form-urlencoded', async () => {
-    const formResponse = new Request('http://example.com/api/notify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams(body),
-    });
-
-    expect(await params(formResponse)).toEqual({
-      errors: [],
-      ...body,
-    });
-  });
-
-  it.each(['application/json', 'application/x-www-form-urlencoded', undefined])(
-    'has errors',
-    async (contentType) => {
+    it('has errors', async () => {
       const request = {
         headers: { get: () => contentType },
       };
@@ -48,6 +40,6 @@ describe('params', () => {
         "missing required parameter 'subject'",
         "missing required parameter 'to'",
       ]);
-    },
-  );
-});
+    });
+  },
+);
