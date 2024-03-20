@@ -37,14 +37,17 @@ describe('params', () => {
     });
   });
 
-  it('has errors', async () => {
-    const request = {
-      headers: { get: () => {} },
-    };
-    const { errors } = await params(request);
-    expect(errors).toEqual([
-      "missing required parameter 'subject'",
-      "missing required parameter 'to'",
-    ]);
-  });
+  it.each(['application/json', 'application/x-www-form-urlencoded', undefined])(
+    'has errors',
+    async (contentType) => {
+      const request = {
+        headers: { get: () => contentType },
+      };
+      const { errors } = await params(request);
+      expect(errors).toEqual([
+        "missing required parameter 'subject'",
+        "missing required parameter 'to'",
+      ]);
+    },
+  );
 });
