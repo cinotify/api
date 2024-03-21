@@ -3,5 +3,5 @@ main = "src/index.js"
 compatibility_date = "2024-03-04"
 compatibility_flags = ["nodejs_compat"]
 routes = [
-	{ pattern = "www.cinotify.cc/api/", zone_id = "8b83258726802e1e77310bd3b08dfefa" }
+	{ pattern = "www.cinotify.cc/api/*", zone_id = "8b83258726802e1e77310bd3b08dfefa" }
 ]
