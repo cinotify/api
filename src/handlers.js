@@ -2,16 +2,11 @@ import { mail } from './mail';
 import { params } from './params';
 
 const postApiNotify = async ({ env, request }) => {
-  const { to, errors = [], ...rest } = await params(request);
-  const recipients = to?.split(',') ?? [];
-  recipients.map(async (recipient) => {
-    await mail({
-      env,
-      to: recipient,
-      ...rest,
-    });
+  const { errors = [], ...rest } = await params(request);
+  await mail({
+    env,
+    ...rest,
   });
-
   const response = {
     ...rest,
     ...(errors.length && { errors }),

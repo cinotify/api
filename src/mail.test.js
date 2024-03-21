@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { input } from './test';
-import { mail } from './mail';
+import { mail, payload } from './mail';
 
 // https://docs.sendgrid.com/api-reference/mail-send/mail-send#body
 const fixture = {
@@ -44,5 +44,16 @@ describe('mail', () => {
         body: JSON.stringify(fixture),
       },
     );
+  });
+});
+
+describe('payload', () => {
+  it('supports multiple recipients', () => {
+    expect(
+      payload({ to: 'one@example.com,two@example.com' }).personalizations[0].to,
+    ).toStrictEqual([
+      { email: 'one@example.com' },
+      { email: 'two@example.com' },
+    ]);
   });
 });

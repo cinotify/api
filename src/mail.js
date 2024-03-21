@@ -13,7 +13,7 @@ export const payload = ({ subject, to, body, attachments }) => ({
   personalizations: [
     {
       subject,
-      to: [{ email: to }],
+      to: to?.split(',').map((recipient) => ({ email: recipient })),
     },
   ],
 });

@@ -57,26 +57,19 @@ describe('handlers', () => {
         }),
       });
       await handler({ request });
-      expect(global.fetch).toHaveBeenCalledTimes(2);
-
-      const requestBody = (email) => ({
-        body: JSON.stringify(
-          payload({
-            ...input,
-            to: email,
-          }),
-        ),
-        headers: expect.any(Object),
-        method: 'POST',
-      });
 
       expect(global.fetch).toHaveBeenCalledWith(
         'https://api.sendgrid.com/v3/mail/send',
-        requestBody('first@example.com'),
-      );
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://api.sendgrid.com/v3/mail/send',
-        requestBody('second@example.com'),
+        {
+          body: JSON.stringify(
+            payload({
+              ...input,
+              to: 'first@example.com,second@example.com',
+            }),
+          ),
+          headers: expect.any(Object),
+          method: 'POST',
+        },
       );
     });
   });
