@@ -3,10 +3,20 @@ import { params } from './params';
 
 const postApiNotify = async ({ env, request }) => {
   const { errors = [], ...rest } = await params(request);
-  await mail({
-    env,
-    ...rest,
-  });
+  try {
+    await mail({
+      env,
+      ...rest,
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      status: 400,
+    });
+  }
+
   const response = {
     ...rest,
     ...(errors.length && { errors }),
