@@ -7,7 +7,7 @@ const fixture = {
   attachments: input.attachments,
   content: [
     {
-      type: 'text/plain',
+      type: 'text/html',
       value: input.body,
     },
   ],
@@ -48,6 +48,12 @@ describe('mail', () => {
 });
 
 describe('payload', () => {
+  it('supports a type', () => {
+    input.type = 'text/html';
+    expect(payload(input).content[0].type).toBe('text/html');
+    input.type = 'text/plain';
+    expect(payload(input).content[0].type).toBe('text/plain');
+  });
   it('supports multiple recipients', () => {
     expect(
       payload({ to: 'one@example.com,two@example.com' }).personalizations[0].to,

@@ -5,3 +5,8 @@ compatibility_flags = ["nodejs_compat"]
 routes = [
     { pattern = "www.cinotify.cc/api/*", zone_id = "8b83258726802e1e77310bd3b08dfefa" }
 ]
+
+[env.staging]
+routes = [
+    { pattern = "staging.cinotify.cc/api/*", zone_id = "8b83258726802e1e77310bd3b08dfefa" }
+]
