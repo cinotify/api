@@ -5,10 +5,10 @@ import { payload } from './mail';
 
 describe('handlers', () => {
   beforeAll(() => {
-    global.fetch = vi.fn();
+    global.fetch = vi.fn().mockImplementation(() => new Response());
   });
 
-  it('400', async () => {
+  it('400 if missing required parameters', async () => {
     const request = new Request('http://example.com/api/notify', {
       method: 'POST',
       headers: {
@@ -20,6 +20,37 @@ describe('handlers', () => {
     expect(await response.status).toEqual(400);
     expect(await response.json()).toEqual(
       expect.objectContaining({ errors: expect.any(Array) }),
+    );
+  });
+
+  it('400 if invalid to: address', async () => {
+    const request = new Request('http://example.com/api/notify', {
+      method: 'POST',
+      body: JSON.stringify({ to: 'invalid email', subject: 'valid subject' }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    global.fetch.mockImplementationOnce(() => {
+      return new Response(
+        JSON.stringify({
+          errors: [
+            {
+              message: 'Does not contain a valid address.',
+              field: 'personalizations.0.to.0.email',
+              help: 'http://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html#message.personalizations.to',
+            },
+          ],
+        }),
+        { status: 400 },
+      );
+    });
+
+    const response = await handler({ request });
+    expect(await response.status).toEqual(400);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({ error: 'Does not contain a valid address.' }),
     );
   });
 
