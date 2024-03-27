@@ -31,7 +31,7 @@ describe('mail', () => {
     global.fetch = vi.fn();
   });
   it('makes a request to the sendgrid api', async () => {
-    global.fetch.mockResolvedValueOnce({ json: () => '{}' });
+    global.fetch.mockResolvedValue({ json: () => '{}' });
     await mail(input);
     expect(global.fetch).toHaveBeenCalledWith(
       'https://api.sendgrid.com/v3/mail/send',
@@ -46,7 +46,7 @@ describe('mail', () => {
     );
   });
   it('logs', async () => {
-    global.fetch.mockResolvedValueOnce({ json: () => '{}', status: 200 });
+    global.fetch.mockResolvedValue({ json: () => '{}', status: 200 });
     await mail({ ...input, to: 'one@example.com,two@example.com' });
     expect(global.fetch).toHaveBeenCalledWith(
       'https://api.logsnag.com/v1/log',
