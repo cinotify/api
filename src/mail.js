@@ -40,6 +40,7 @@ export const mail = async ({ env = {}, ...rest }) => {
       attachments: !!rest.attachments,
       contentType: rest.type,
       status: response.status,
+      userAgent: rest.userAgent,
     },
   });
   if (response.status > 299) {
