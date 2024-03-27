@@ -1,5 +1,5 @@
 export const log = async ({ env, user_id, tags }) => {
-  fetch('https://api.logsnag.com/v1/log', {
+  await fetch('https://api.logsnag.com/v1/log', {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${env.LOGSNAG_API_TOKEN}`,
