@@ -20,6 +20,7 @@ describe.each(['application/json', 'application/x-www-form-urlencoded'])(
         method: 'POST',
         headers: {
           'Content-Type': contentType,
+          'User-Agent': 'custom-user-agent 1.0',
         },
         body: (format[contentType] ?? ((d) => d))(body),
       });
@@ -27,6 +28,7 @@ describe.each(['application/json', 'application/x-www-form-urlencoded'])(
       expect(await params(request)).toEqual({
         errors: [],
         ...body,
+        userAgent: 'custom-user-agent 1.0',
       });
     });
 

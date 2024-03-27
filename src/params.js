@@ -34,6 +34,8 @@ export const params = async (request) => {
     // pass
   }
 
+  data.userAgent = request.headers.get('user-agent');
+
   data.errors = required.reduce(
     (acc, el) =>
       data?.[el] ? acc : [...acc, `missing required parameter '${el}'`],

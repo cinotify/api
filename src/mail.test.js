@@ -47,7 +47,11 @@ describe('mail', () => {
   });
   it('logs', async () => {
     global.fetch.mockResolvedValue({ json: () => '{}', status: 200 });
-    await mail({ ...input, to: 'one@example.com,two@example.com' });
+    await mail({
+      ...input,
+      to: 'one@example.com,two@example.com',
+      userAgent: 'custom-user-agent 1.0',
+    });
     expect(global.fetch).toHaveBeenCalledWith(
       'https://api.logsnag.com/v1/log',
       expect.objectContaining({
@@ -61,6 +65,7 @@ describe('mail', () => {
             attachments: true,
             contentType: 'text/html',
             status: 200,
+            userAgent: 'custom-user-agent 1.0',
           },
         }),
       }),
