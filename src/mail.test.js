@@ -31,7 +31,7 @@ describe('mail', () => {
     global.fetch = vi.fn();
   });
   it('makes a request to the sendgrid api', async () => {
-    global.fetch.mockResolvedValueOnce({ json: () => '{}' });
+    global.fetch.mockResolvedValue({ json: () => '{}' });
     await mail(input);
     expect(global.fetch).toHaveBeenCalledWith(
       'https://api.sendgrid.com/v3/mail/send',
@@ -43,6 +43,27 @@ describe('mail', () => {
         method: 'POST',
         body: JSON.stringify(fixture),
       },
+    );
+  });
+  it('logs', async () => {
+    global.fetch.mockResolvedValue({ json: () => '{}', status: 200 });
+    await mail({ ...input, to: 'one@example.com,two@example.com' });
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://api.logsnag.com/v1/log',
+      expect.objectContaining({
+        body: JSON.stringify({
+          project: 'cinotify',
+          channel: 'api',
+          event: 'mail',
+          icon: '📬',
+          user_id: 'one@example.com',
+          tags: {
+            attachments: true,
+            contentType: 'text/html',
+            status: 200,
+          },
+        }),
+      }),
     );
   });
 });

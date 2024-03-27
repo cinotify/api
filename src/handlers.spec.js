@@ -5,7 +5,7 @@ import { payload } from './mail';
 
 describe('handlers', () => {
   beforeAll(() => {
-    global.fetch = vi.fn().mockImplementation(() => new Response());
+    global.fetch = vi.fn().mockImplementation(() => new Response('{}'));
   });
 
   it('400 if missing required parameters', async () => {
