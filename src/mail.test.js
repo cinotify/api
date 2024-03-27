@@ -45,6 +45,27 @@ describe('mail', () => {
       },
     );
   });
+  it('logs', async () => {
+    global.fetch.mockResolvedValueOnce({ json: () => '{}', status: 200 });
+    await mail({ ...input, to: 'one@example.com,two@example.com' });
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://api.logsnag.com/v1/log',
+      expect.objectContaining({
+        body: JSON.stringify({
+          project: 'cinotify',
+          channel: 'api',
+          event: 'mail',
+          icon: '📬',
+          user_id: 'one@example.com',
+          tags: {
+            attachments: true,
+            contentType: 'text/html',
+            status: 200,
+          },
+        }),
+      }),
+    );
+  });
 });
 
 describe('payload', () => {

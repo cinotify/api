@@ -1,3 +1,5 @@
+import { log } from './log';
+
 export const payload = ({ subject, to, type, body, attachments }) => ({
   // https://docs.sendgrid.com/api-reference/mail-send/mail-send#body
   attachments,
@@ -30,6 +32,15 @@ export const mail = async ({ env = {}, ...rest }) => {
     },
     method: 'POST',
     body: JSON.stringify(payload({ ...rest })),
+  });
+  await log({
+    env,
+    user_id: rest.to?.split(',')[0],
+    tags: {
+      attachments: !!rest.attachments,
+      contentType: rest.type,
+      status: response.status,
+    },
   });
   if (response.status > 299) {
     throw new Error((await response.json()).errors[0].message);
